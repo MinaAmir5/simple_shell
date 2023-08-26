@@ -1,52 +1,67 @@
 #include "main.h"
+
+void shit(int *Local_U32_ExitStat, int *Local_U32_BuiltinStat,
+int Local_U32_Counter, char *Local_PU8_Line, char *Local_PU8_Args[])
+{
+	int Local_U32_PathStat;
+
+	Local_U32_PathStat = Path_U32_GetPath(Local_PU8_Args);
+	if (Local_U32_PathStat != 0)
+	{
+		*Local_U32_BuiltinStat = Execution_U32_ChechBuiltin(
+		Local_PU8_Args, *Local_U32_ExitStat);
+		if (Local_U32_BuiltinStat != 0)
+		{
+			*Local_U32_ExitStat = Error_U32_Print(Local_PU8_Args, Local_U32_Counter);
+			free(Local_PU8_Line);
+		}
+	}
+	else
+		*Local_U32_ExitStat = Execution_U32_Execute(Local_PU8_Args),
+		free(Local_PU8_Line), free(*Local_PU8_Args);
+}
 /**
- * main - Entry point for the simple shell project created
- * for ALX sprint one final Project.
+ * main - main shell program
+ *
  * Return: 0 on success
  */
 int main(void)
 {
-	ssize_t bytes_rd = 0; /** Bytes read from a getline*/
-	size_t bf_size = 0; /**Buffer size*/
-	char *entry = NULL, *arguments[20]; /**String of args that enters the usr*/
-	int counter = 1, vf_stat = 0, exist_stat = 0, exit_stat = 0, blt_stat = 0;
+	size_t Local_size_BuffSize = 0;
+	ssize_t Local_ssize_ByteNum = 0;
+	char *Local_PU8_Line = NULL, *Local_PU8_Args[20];
+	int Local_U32_FileStat = 0, Local_U32_Counter = 1,
+	Local_U32_BuiltinStat = 0, Local_U32_ExitStat = 0;
 
 	if (isatty(STDIN_FILENO))
 		write(1, "$ ", 2);
-	bytes_rd = getline(&entry, &bf_size, stdin); /**sizeof entry, o -1 (EOF))*/
-	while (bytes_rd != -1)
+	Local_ssize_ByteNum = getline(&Local_PU8_Line, &Local_size_BuffSize, stdin);
+	while (Local_ssize_ByteNum != -1)
 	{
-		if (*entry != '\n')
+		if (*Local_PU8_Line == '\n')
+			free(Local_PU8_Line);
+		else if (*Local_PU8_Line != '\n')
 		{
-			String_U32_StrSplit(entry, arguments);
-			if (arguments[0] != NULL)
-			{
-				exist_stat = Path_U32_CheckPath(arguments[0]);/*checks if the path entered exists*/
-				if (exist_stat != 0)/**Did not find the file*/
-				{
-					vf_stat = Path_U32_GetPath(arguments);
-					if (vf_stat == 0)
-						exit_stat = Execution_U32_Execute(arguments), free(entry), free(*arguments);
-					else
-					{
-					blt_stat = Execution_U32_ChechBuiltin(arguments, exit_stat);
-					if (blt_stat != 0)
-						exit_stat = Error_U32_Print(arguments, counter), free(entry);
-					}
-				}
-				else /**Found the file*/
-					exit_stat = Execution_U32_Execute(arguments), free(entry);
-			}
+			String_U32_StrSplit(Local_PU8_Line, Local_PU8_Args);
+			if (Local_PU8_Args[0] == NULL)
+				free(Local_PU8_Line);
 			else
-				free(entry);
+			{
+				Local_U32_FileStat = Path_U32_CheckPath(Local_PU8_Args[0]);
+				if (Local_U32_FileStat == 0)
+					Local_U32_ExitStat = Execution_U32_Execute(Local_PU8_Args),
+						free(Local_PU8_Line);
+				else
+					shit(&Local_U32_ExitStat, &Local_U32_BuiltinStat,
+						Local_U32_Counter, Local_PU8_Line, Local_PU8_Args);
+			}
 		}
-		else if (*entry == '\n')
-			free(entry);
-		entry = NULL, counter++;
+		Local_U32_Counter++;
+		Local_PU8_Line = NULL;
 		if (isatty(STDIN_FILENO))
 			write(1, "$ ", 2);
-		bytes_rd = getline(&entry, &bf_size, stdin);
+		Local_ssize_ByteNum = getline(&Local_PU8_Line, &Local_size_BuffSize, stdin);
 	}
-	Memory_Void_FreePU8(entry);
-	return (exit_stat);
+	Memory_Void_FreePU8(Local_PU8_Line);
+	return (Local_U32_ExitStat);
 }
