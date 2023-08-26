@@ -11,7 +11,8 @@ void Memory_Void_FreePPU8(char **Copy_PPU_P2P, int Copy_U32_Size)
 
 	if (Copy_PPU_P2P == NULL)
 		return;
-	for (Local_U32_Counter = 0; Local_U32_Counter < Copy_U32_Size; Local_U32_Counter++)
+	for (Local_U32_Counter = 0; Local_U32_Counter < Copy_U32_Size;
+		Local_U32_Counter++)
 		free(Copy_PPU_P2P[Local_U32_Counter]);
 }
 
@@ -23,5 +24,5 @@ void Memory_Void_FreePU8(char *Copy_PU8_Array)
 {
 	if (isatty(STDIN_FILENO))
 		String_U32_PutChar('\n');
-	free(Copy_PU8_Array);	
+	free(Copy_PU8_Array);
 }
