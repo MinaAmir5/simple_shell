@@ -9,6 +9,7 @@ char *Path_PU8_GetEnv(char *Copy_PU8_Var)
 {
 	char *Local_PU8_Token, *Local_PU8_Dup, *Local_PU8_TokDup;
 	int Local_U32_Counter = 0;
+
 	if (environ == NULL)
 		return (NULL);
 	if (Copy_PU8_Var != NULL)
@@ -20,7 +21,7 @@ char *Path_PU8_GetEnv(char *Copy_PU8_Var)
 			if (String_PU8_StrCmp(Local_PU8_Token, Copy_PU8_Var) == 0)
 			{
 				Local_PU8_Token = strtok(NULL, "=");
-	
+
 				Local_PU8_TokDup = String_PU8_StrDup(Local_PU8_Token);
 				free(Local_PU8_Dup);
 				return (Local_PU8_TokDup);
@@ -60,29 +61,31 @@ int Path_U32_CheckPath(char *Copy_PU8_Path)
 */
 int Path_U32_GetPath(char **Copy_PU8_Command)
 {
-    char *Local_PU8_EnvPath = NULL, *Local_PU8_Dup = NULL, *Local_PU8_CommPath = NULL, *Local_PU8_FullPath = NULL;
+	char *Local_PU8_EnvPath = NULL, *Local_PU8_Dup = NULL,
+		*Local_PU8_CommPath = NULL, *Local_PU8_FullPath = NULL;
 
-    Local_PU8_EnvPath = Path_PU8_GetEnv("PATH");
-    if (Local_PU8_EnvPath == NULL)
-        return (-1);
-    Local_PU8_Dup = (String_PU8_StrDup(Local_PU8_EnvPath));
-    Local_PU8_CommPath = strtok(Local_PU8_Dup, ":");
-    if (Local_PU8_CommPath == NULL)
-        return (-1);
-    free(Local_PU8_EnvPath);
-    while (Local_PU8_CommPath != NULL)
-    {
-        Local_PU8_FullPath = String_PU8_StrConcat(Local_PU8_CommPath, Copy_PU8_Command[0]);
-        if (Path_U32_CheckPath(Local_PU8_FullPath) == 0)
-        {
-        Copy_PU8_Command[0] = Local_PU8_FullPath;
-        free(Local_PU8_FullPath);
-        free(Local_PU8_Dup);
-        return (0);
-        }
-        free(Local_PU8_FullPath);
-        Local_PU8_CommPath = strtok(NULL, ":");
-    }
-    free(Local_PU8_Dup);
-    return (-1);
+	Local_PU8_EnvPath = Path_PU8_GetEnv("PATH");
+	if (Local_PU8_EnvPath == NULL)
+		return (-1);
+	Local_PU8_Dup = (String_PU8_StrDup(Local_PU8_EnvPath));
+	Local_PU8_CommPath = strtok(Local_PU8_Dup, ":");
+	if (Local_PU8_CommPath == NULL)
+		return (-1);
+	free(Local_PU8_EnvPath);
+	while (Local_PU8_CommPath != NULL)
+	{
+		Local_PU8_FullPath = String_PU8_StrConcat(Local_PU8_CommPath,
+			Copy_PU8_Command[0]);
+		if (Path_U32_CheckPath(Local_PU8_FullPath) == 0)
+		{
+			Copy_PU8_Command[0] = Local_PU8_FullPath;
+			free(Local_PU8_FullPath);
+			free(Local_PU8_Dup);
+			return (0);
+		}
+		free(Local_PU8_FullPath);
+		Local_PU8_CommPath = strtok(NULL, ":");
+	}
+	free(Local_PU8_Dup);
+	return (-1);
 }
