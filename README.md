@@ -1,2 +1,2 @@
 # simple_shell
-UNIX command line interpreter.
+Simple UNIX command line interpreter.
