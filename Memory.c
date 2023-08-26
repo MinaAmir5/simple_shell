@@ -22,6 +22,6 @@ void Memory_Void_FreePPU8(char **Copy_PPU_P2P, int Copy_U32_Size)
 void Memory_Void_FreePU8(char *Copy_PU8_Array)
 {
 	if (isatty(STDIN_FILENO))
-		_putchar('\n');
+		String_U32_PutChar('\n');
 	free(Copy_PU8_Array);	
 }
